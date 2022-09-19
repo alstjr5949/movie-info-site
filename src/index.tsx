@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { RecoilRoot } from "recoil";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import reset from "styled-reset";
@@ -11,6 +12,10 @@ export const GlobalStyle = createGlobalStyle`
   html {
     font-size: 10px;
     font-family: "GmarketSansMedium";
+  }
+  body{
+    overflow-x: hidden;
+    color: #fff;
   }
   * {
     box-sizing: border-box;
@@ -40,16 +45,20 @@ export const GlobalStyle = createGlobalStyle`
   }
 `;
 
+const client = new QueryClient();
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
     <RecoilRoot>
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
-        <App />
-      </ThemeProvider>
+      <QueryClientProvider client={client}>
+        <ThemeProvider theme={theme}>
+          <GlobalStyle />
+          <App />
+        </ThemeProvider>
+      </QueryClientProvider>
     </RecoilRoot>
   </React.StrictMode>
 );
