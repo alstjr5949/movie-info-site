@@ -38,6 +38,13 @@ const Title = styled.h2`
 const Overview = styled.p`
   font-size: 25px;
   width: 40%;
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+  word-break: keep-all;
 `;
 
 const SliderWrapper = styled.div`
