@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getMovies, IGetMoviesResult } from "../api";
+import { getUpMovies, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
 
 const SliderWrapper = styled.div`
@@ -119,6 +119,7 @@ const BigMovie = styled(motion.div)`
   background-color: ${(props) => props.theme.black.lighter};
   border-radius: 15px;
   overflow: hidden;
+  z-index: 10;
 `;
 
 const BigCover = styled.div`
@@ -183,9 +184,9 @@ const infoVariants = {
 
 const offset = 6;
 
-const MovieSlider = () => {
+const UpMovieSlider = () => {
   const navigate = useNavigate();
-  const bigMovieMatch = useMatch("/movies/:movieId/now");
+  const bigMovieMatch = useMatch("/movies/:movieId/up");
 
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
@@ -193,28 +194,28 @@ const MovieSlider = () => {
 
   const { scrollY } = useScroll();
 
-  const { data, isLoading } = useQuery<IGetMoviesResult>(
-    ["movies", "nowPlaying"],
-    getMovies
+  const { data: upComingMovieData, isLoading } = useQuery<IGetMoviesResult>(
+    ["upComingMovies", "up"],
+    getUpMovies
   );
 
   const increaseIndex = () => {
-    if (data) {
+    if (upComingMovieData) {
       if (leaving) return;
       toggleLeaving();
       setIsLeft(false);
-      const totalMovies = data?.results.length - 1;
+      const totalMovies = upComingMovieData?.results.length - 1;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
   };
 
   const decreaseIndex = () => {
-    if (data) {
+    if (upComingMovieData) {
       if (leaving) return;
       toggleLeaving();
       setIsLeft(true);
-      const totalMovies = data?.results.length - 1;
+      const totalMovies = upComingMovieData?.results.length - 1;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
       setIndex((prev) => (prev === 0 ? maxIndex : prev - 1));
     }
@@ -222,12 +223,12 @@ const MovieSlider = () => {
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
   const onBoxClicked = (movieId: number) => {
-    navigate(`/movies/${movieId}/now`);
+    navigate(`/movies/${movieId}/up`);
   };
   const onOverlayClick = () => navigate("/");
   const clickedMovie =
     bigMovieMatch?.params.movieId &&
-    data?.results.find(
+    upComingMovieData?.results.find(
       (movie) => movie.id + "" === bigMovieMatch.params.movieId
     );
   return (
@@ -237,7 +238,7 @@ const MovieSlider = () => {
       ) : (
         <>
           <SliderWrapper>
-            <SliderTitle>현재 상영중인 영화</SliderTitle>
+            <SliderTitle>곧 개봉할 영화</SliderTitle>
             <Slider>
               <LeftBtn onClick={decreaseIndex}>
                 <LeftIcon
@@ -264,13 +265,13 @@ const MovieSlider = () => {
                   exit={isLeft ? "hidden" : "exit"}
                   transition={{ type: "tween", duration: 1 }}
                 >
-                  {data?.results
+                  {upComingMovieData?.results
                     .slice(1)
                     .slice(offset * index, offset * index + offset)
                     .map((movie) => (
                       <Box
-                        key={movie.id}
-                        layoutId={movie.id + ""}
+                        key={`pop${movie.id}`}
+                        layoutId={`${movie.id}up`}
                         variants={boxVariants}
                         transition={{ type: "tween" }}
                         initial="normal"
@@ -296,7 +297,7 @@ const MovieSlider = () => {
                   animate={{ opacity: 1 }}
                 />
                 <BigMovie
-                  layoutId={bigMovieMatch.params.movieId}
+                  layoutId={`${bigMovieMatch.params.movieId}up`}
                   style={{ top: scrollY.get() + 100 }}
                 >
                   {clickedMovie && (
@@ -324,4 +325,4 @@ const MovieSlider = () => {
   );
 };
 
-export default MovieSlider;
+export default UpMovieSlider;

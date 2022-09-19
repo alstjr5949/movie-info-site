@@ -2,11 +2,14 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../api";
 import MovieSlider from "../Components/MovieSlider";
+import PopularMovieSlider from "../Components/PopularMovieSlider";
+import TopMovieSlider from "../Components/TopRatedMovieSlider";
+import UpMovieSlider from "../Components/UpcomingMovieSlider";
 import { makeImagePath } from "../utils";
 
 const Wrapper = styled.div`
   background-color: black;
-  height: 200vh;
+  height: 250vh;
 `;
 
 const Loader = styled.div`
@@ -37,6 +40,13 @@ const Overview = styled.p`
   width: 40%;
 `;
 
+const SliderWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: -100px;
+  gap: 300px;
+`;
+
 function Home() {
   const { data, isLoading } = useQuery<IGetMoviesResult>(
     ["movies", "nowPlaying"],
@@ -52,7 +62,12 @@ function Home() {
             <Title>{data?.results[0].title}</Title>
             <Overview>{data?.results[0].overview}</Overview>
           </Banner>
-          <MovieSlider />
+          <SliderWrapper>
+            <PopularMovieSlider />
+            <MovieSlider />
+            <TopMovieSlider />
+            <UpMovieSlider />
+          </SliderWrapper>
         </>
       )}
     </Wrapper>
