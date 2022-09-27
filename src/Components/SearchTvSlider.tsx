@@ -144,15 +144,15 @@ const BigOverview = styled.p`
 `;
 
 const rowVariants = {
-  hidden: {
-    x: window.outerWidth + 5,
-  },
+  hidden: ({ isLeft }: { isLeft: boolean }) => ({
+    x: isLeft ? window.outerWidth + 5 : -(window.outerWidth + 5),
+  }),
   visible: {
     x: 0,
   },
-  exit: {
-    x: -window.outerWidth - 5,
-  },
+  exit: ({ isLeft }: { isLeft: boolean }) => ({
+    x: isLeft ? -(window.outerWidth + 5) : window.outerWidth + 5,
+  }),
 };
 
 const boxVariants = {
@@ -256,13 +256,18 @@ const SearchTvSlider = () => {
                   <path d="M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                 </RightIcon>
               </RightBtn>
-              <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+              <AnimatePresence
+                initial={false}
+                onExitComplete={toggleLeaving}
+                custom={{ isLeft: isLeft }}
+              >
                 <Row
                   variants={rowVariants}
+                  custom={{ isLeft: isLeft }}
                   key={index}
-                  initial={isLeft ? "exit" : "hidden"}
+                  initial="hidden"
                   animate="visible"
-                  exit={isLeft ? "hidden" : "exit"}
+                  exit="exit"
                   transition={{ type: "tween", duration: 1 }}
                 >
                   {data?.results
